@@ -1,0 +1,5 @@
+# robots.txt — Mosquée d'Etampes Centre
+# Site en cours de développement et de recette (Bloc 1 à 3) : noindex par défaut (§10)
+
+User-agent: *
+Disallow: /

@@ -1,0 +1,138 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  name         String
+  role         String     @default("EDITOR") // ADMIN or EDITOR
+  passwordHash String
+  isActive     Boolean    @default(true)
+  lastLogin    DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  news         News[]
+  medias       Media[]
+  auditLogs    AuditLog[]
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  news      News[]
+}
+
+model News {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  imageUrl    String?
+  imageAlt    String?
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  status      String   @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  isFeatured  Boolean  @default(false)
+  publishedAt DateTime @default(now())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  slug        String    @unique
+  description String
+  startDate   DateTime
+  endDate     DateTime?
+  location    String    @default("Mosquée d'Etampes Centre")
+  imageUrl    String?
+  imageAlt    String?
+  status      String    @default("PUBLISHED") // DRAFT, PUBLISHED, ARCHIVED
+  showOnHome  Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model PageContent {
+  id              String   @id @default(uuid())
+  key             String   @unique // e.g. "la-mosquee", "informations-pratiques", "mentions-legales", "confidentialite"
+  title           String
+  content         String
+  metaTitle       String?
+  metaDescription String?
+  updatedAt       DateTime @updatedAt
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  schedule    String   // Texte libre avec les jours et horaires
+  imageUrl    String?
+  imageAlt    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Media {
+  id           String   @id @default(uuid())
+  filename     String   @unique
+  originalName String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  altText      String
+  isDecorative Boolean  @default(false)
+  author       String?
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model SiteSetting {
+  id                   Int       @id @default(1)
+  officialName         String    @default("Mosquée d'Etampes Centre")
+  address              String    @default("2 avenue du 8 mai 1945, 91150 Étampes")
+  whatsapp             String    @default("+33 7 49 60 90 62")
+  email                String?   // [À COMPLÉTER]
+  logoUrl              String    @default("/logo-mosquee.svg")
+  heroBannerUrl        String    @default("/images/provisoires/hero-facade.jpg")
+  interiorPhotoUrl     String    @default("/images/provisoires/interieur-mosquee.jpg")
+  description          String    @default("Site officiel de la Mosquée d'Etampes Centre. Horaires de prière, actualités, enseignements et vie de la communauté musulmane à Étampes.")
+  announcementActive   Boolean   @default(false)
+  announcementText     String?
+  announcementLink     String?
+  announcementEndDate  DateTime?
+  updatedAt            DateTime  @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  userName  String?
+  userEmail String?
+  action    String   // e.g. "CREATE_NEWS", "UPDATE_SETTING", "LOGIN_SUCCESS"
+  entity    String   // "News", "Event", "SiteSetting", etc.
+  entityId  String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}
