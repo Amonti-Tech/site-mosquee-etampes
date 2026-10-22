@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
 import { Clock, BookOpen, Heart, Users, Sparkles } from 'lucide-react';
+import { getPublicActivities } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,10 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ActivitiesPage() {
-  const activities = await prisma.activity.findMany({
-    where: { isActive: true },
-    orderBy: { order: 'asc' }
-  });
+  const activities = await getPublicActivities();
 
   return (
     <div className="section section-cream">

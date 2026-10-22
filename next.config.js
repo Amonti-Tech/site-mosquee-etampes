@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  outputFileTracingIncludes: {
+    '/**': ['./prisma/**/*']
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: []

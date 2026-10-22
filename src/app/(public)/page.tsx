@@ -1,44 +1,25 @@
 import React from 'react';
 import Link from 'next/link';
-import prisma from '@/lib/prisma';
 import MawaqitWidget from '@/components/public/MawaqitWidget';
 import NewsCard from '@/components/public/NewsCard';
 import EventCard from '@/components/public/EventCard';
 import { ArrowRight, BookOpen, Heart, Users, MapPin, Calendar, Clock } from 'lucide-react';
+import { getPublicSettings, getLatestNews, getPublicEvents, getPublicActivities } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   // 1. Récupération des paramètres
-  const settings = await prisma.siteSetting.findUnique({
-    where: { id: 1 }
-  });
+  const settings = await getPublicSettings();
 
   // 2. Récupération des 3 dernières actualités publiées
-  const latestNews = await prisma.news.findMany({
-    where: { status: 'PUBLISHED' },
-    orderBy: { publishedAt: 'desc' },
-    take: 3,
-    include: { category: true }
-  });
+  const latestNews = await getLatestNews(3);
 
   // 3. Récupération des 3 prochains événements à venir
-  const upcomingEvents = await prisma.event.findMany({
-    where: {
-      status: 'PUBLISHED',
-      showOnHome: true,
-      startDate: { gte: new Date() }
-    },
-    orderBy: { startDate: 'asc' },
-    take: 3
-  });
+  const upcomingEvents = await getPublicEvents(3);
 
   // 4. Récupération des activités actives
-  const activities = await prisma.activity.findMany({
-    where: { isActive: true },
-    orderBy: { order: 'asc' },
-    take: 3
-  });
+  const activities = await getPublicActivities(3);
 
   const officialName = settings?.officialName || "Mosquée d'Etampes Centre";
   const address = settings?.address || "2 avenue du 8 mai 1945, 91150 Étampes";

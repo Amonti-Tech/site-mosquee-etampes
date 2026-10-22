@@ -6,6 +6,9 @@
 [build.environment]
   DATABASE_URL = "file:./data/mosquee.db"
 
+[functions]
+  included_files = ["prisma/**/*"]
+
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
   ## Not needed for static site generators.
   #[[redirects]]

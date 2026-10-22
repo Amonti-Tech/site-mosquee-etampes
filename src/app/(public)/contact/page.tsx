@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
 import { MapPin, Phone, MessageSquare, Mail, AlertCircle, Clock } from 'lucide-react';
+import { getPublicSettings } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,9 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const settings = await prisma.siteSetting.findUnique({
-    where: { id: 1 }
-  });
+  const settings = await getPublicSettings();
 
   const officialName = settings?.officialName || "Mosquée d'Etampes Centre";
   const address = settings?.address || "2 avenue du 8 mai 1945, 91150 Étampes";

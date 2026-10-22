@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
 import EventCard from '@/components/public/EventCard';
 import { Calendar, Archive } from 'lucide-react';
+import { getPublicEvents, getPastEvents } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,26 +12,11 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const now = new Date();
-
   // Événements futurs
-  const upcomingEvents = await prisma.event.findMany({
-    where: {
-      status: 'PUBLISHED',
-      startDate: { gte: now }
-    },
-    orderBy: { startDate: 'asc' }
-  });
+  const upcomingEvents = await getPublicEvents();
 
   // Événements passés (archivés automatiquement selon la date)
-  const pastEvents = await prisma.event.findMany({
-    where: {
-      status: 'PUBLISHED',
-      startDate: { lt: now }
-    },
-    orderBy: { startDate: 'desc' },
-    take: 6
-  });
+  const pastEvents = await getPastEvents(6);
 
   return (
     <div className="section section-cream">

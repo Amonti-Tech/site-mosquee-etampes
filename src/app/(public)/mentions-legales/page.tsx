@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
+import { getPublicPageContent } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,9 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MentionsLegalesPage() {
-  const page = await prisma.pageContent.findUnique({
-    where: { key: 'mentions-legales' }
-  });
+  const page = await getPublicPageContent('mentions-legales');
 
   return (
     <article className="section section-cream" aria-labelledby="mentions-title">

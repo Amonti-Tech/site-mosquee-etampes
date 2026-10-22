@@ -2,8 +2,8 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import prisma from '@/lib/prisma';
 import { Calendar, Tag, ArrowLeft, Share2 } from 'lucide-react';
+import { getNewsBySlug } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,9 +15,7 @@ interface NewsDetailProps {
 
 export async function generateMetadata({ params }: NewsDetailProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const news = await prisma.news.findUnique({
-    where: { slug: resolvedParams.slug }
-  });
+  const news = await getNewsBySlug(resolvedParams.slug);
 
   if (!news) {
     return { title: "Article introuvable — Mosquée d'Etampes Centre" };
@@ -36,10 +34,7 @@ export async function generateMetadata({ params }: NewsDetailProps): Promise<Met
 
 export default async function NewsDetailPage({ params }: NewsDetailProps) {
   const resolvedParams = await params;
-  const news = await prisma.news.findUnique({
-    where: { slug: resolvedParams.slug },
-    include: { category: true, author: true }
-  });
+  const news = await getNewsBySlug(resolvedParams.slug);
 
   if (!news || news.status !== 'PUBLISHED') {
     notFound();

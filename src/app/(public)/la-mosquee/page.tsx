@@ -1,14 +1,12 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
 import { Building2, Compass, Shield, Users } from 'lucide-react';
+import { getPublicPageContent, getPublicSettings } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await prisma.pageContent.findUnique({
-    where: { key: 'la-mosquee' }
-  });
+  const page = await getPublicPageContent('la-mosquee');
 
   return {
     title: page?.metaTitle || "La Mosquée — Mosquée d'Etampes Centre",
@@ -17,13 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MosqueePage() {
-  const page = await prisma.pageContent.findUnique({
-    where: { key: 'la-mosquee' }
-  });
-
-  const settings = await prisma.siteSetting.findUnique({
-    where: { id: 1 }
-  });
+  const page = await getPublicPageContent('la-mosquee');
+  const settings = await getPublicSettings();
 
   const officialName = settings?.officialName || "Mosquée d'Etampes Centre";
   const interiorImage = settings?.interiorPhotoUrl || '/images/provisoires/interieur-mosquee.jpg';

@@ -1,8 +1,8 @@
 import React from 'react';
-import prisma from '@/lib/prisma';
 import Header from '@/components/public/Header';
 import Footer from '@/components/public/Footer';
 import AnnouncementBanner from '@/components/public/AnnouncementBanner';
+import { getPublicSettings } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,15 +11,7 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let settings = null;
-  try {
-    settings = await prisma.siteSetting.findUnique({
-      where: { id: 1 }
-    });
-  } catch (error) {
-    console.error('Erreur chargement paramètres:', error);
-  }
-
+  const settings = await getPublicSettings();
   const officialName = settings?.officialName || "Mosquée d'Etampes Centre";
 
   return (

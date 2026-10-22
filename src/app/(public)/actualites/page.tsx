@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import prisma from '@/lib/prisma';
 import NewsCard from '@/components/public/NewsCard';
+import { getAllCategories, getLatestNews } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,25 +21,11 @@ export default async function NewsListPage({ searchParams }: NewsPageProps) {
   const resolvedSearchParams = await searchParams;
   const currentCategorySlug = resolvedSearchParams.categorie;
 
-  // Récupérer toutes les catégories ayant au moins un article
-  const categories = await prisma.category.findMany({
-    orderBy: { order: 'asc' }
-  });
+  // Récupérer toutes les catégories
+  const categories = await getAllCategories();
 
-  // Filtrer les actualités publiées
-  const whereClause: { status: string; category?: { slug: string } } = {
-    status: 'PUBLISHED'
-  };
-
-  if (currentCategorySlug) {
-    whereClause.category = { slug: currentCategorySlug };
-  }
-
-  const newsList = await prisma.news.findMany({
-    where: whereClause,
-    orderBy: { publishedAt: 'desc' },
-    include: { category: true }
-  });
+  // Récupérer les actualités publiées
+  const newsList = await getLatestNews(20, currentCategorySlug);
 
   return (
     <div className="section section-cream">

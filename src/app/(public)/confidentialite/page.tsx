@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import prisma from '@/lib/prisma';
+import { getPublicPageContent } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,9 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ConfidentialitePage() {
-  const page = await prisma.pageContent.findUnique({
-    where: { key: 'confidentialite' }
-  });
+  const page = await getPublicPageContent('confidentialite');
 
   return (
     <article className="section section-cream" aria-labelledby="privacy-title">
