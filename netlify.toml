@@ -5,7 +5,6 @@
 
 [build.environment]
   DATABASE_URL = "file:./data/mosquee.db"
-  SESSION_SECRET = "dev_mosquee_etampes_centre_secret_key_random_2026_test"
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
   ## Not needed for static site generators.
